@@ -31,25 +31,30 @@ app.use(express.json());
 exRoute.post('/register', async (req, res) => {
     try {
         const { username, email, password } = req.body;
-        console.log(req.body.username);
-        console.log(req.body.email);
-        console.log(req.body.password);
-        console.log(username);
-        console.log(email);
-        console.log(password);
 
+        // Log the received body
+        console.log('Request Body:', req.body);
+
+        // Check if any of the required fields are missing
+        if (!username || !email || !password) {
+            return res.status(400).send('Missing required fields');
+        }
+
+        // Check if the user already exists
         const user = await User.findOne({ email });
-        if (!user) {
-            const hashedPassword = await bcrypt.hash(password, 10);
-            const newUser = new User({ username, email, password: hashedPassword });
-            await newUser.save();
-            res.status(201).send('User registered');
-        } else { return res.status(400).send('User already exists'); }
+        if (user) {
+            return res.status(400).send('User already exists');
+        }
 
+        // Hash the password and create a new user
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User({ username, email, password: hashedPassword });
+        await newUser.save();
 
+        res.status(201).send('User registered');
     } catch (error) {
+        console.error('Error registering user:', error);
         res.status(500).send('Error registering user');
-        console.log(error);
     }
 });
 
