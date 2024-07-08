@@ -31,6 +31,9 @@ app.use(express.json());
 exRoute.post('/register', async (req, res) => {
     try {
         const { username, email, password } = req.body;
+        console.log(req.body.username);
+        console.log(req.body.email);
+        console.log(req.body.password);
         console.log(username);
         console.log(email);
         console.log(password);
