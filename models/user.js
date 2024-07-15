@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const BMISchema = require('./bmi').schema;
 
 const UserSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
@@ -8,6 +9,47 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
+  emailVerifiedAt: {
+    type: Boolean, required: true,
+    default: false
+  },
+  image: {
+    type: String,
+    default: ""
+  },
+  instragramUrl: {
+    type: String,
+    default: ""
+  },
+  facebookUrl: {
+    type: String,
+    default: ""
+  },
+  pinterestUrl: {
+    type: String,
+    default: ""
+  },
+  youtubeUrl: {
+    type: String,
+    default: ""
+  },
+  height: {
+    type: String,
+    default: ""
+  },
+  weight: {
+    type: String,
+    default: ""
+  },
+  birthdate: {
+    type: String,
+    default: ""
+  },
+  bmiHistory: [BMISchema],
 });
 
 module.exports = mongoose.model('User', UserSchema);

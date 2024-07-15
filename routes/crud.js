@@ -62,7 +62,7 @@ exRoute.post('/register', async (req, res) => {
 exRoute.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-        
+
         console.log(email);
         console.log(password);
         const user = await User.findOne({ email });
@@ -78,15 +78,18 @@ exRoute.post('/login', async (req, res) => {
     }
 });
 
-exRoute.post('/update', function (req, res, next) {
-    connection.execute("UPDATE users SET name=?, surName=? WHERE id=?;",
-        [req.body.name, req.body.surName, req.body.id])
-        .then(() => {
-            console.log('ok');
-        }).catch((err) => {
-            console.log(err);
-        });
-    res.end();
+exRoute.put('/user',  auth, async (req, res) =>{
+    try {
+        const { userId } = req.user;
+
+        await User.findByIdAndUpdate(
+            userId,
+            req.body,
+            { new: true });
+        res.send('User updated');
+    } catch (error) {
+        res.status(500).send('Error updating user');
+    }
 });
 
 exRoute.delete('/user', auth, async (req, res) => {
