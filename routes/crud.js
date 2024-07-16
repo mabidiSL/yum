@@ -88,7 +88,7 @@ exRoute.put('/user',  auth, async (req, res) =>{
             { new: true });
         res.send('User updated');
     } catch (error) {
-        res.status(500).send('Error updating user');
+        res.status(500).send('Error updating user '+error);
     }
 });
 
