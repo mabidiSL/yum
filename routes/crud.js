@@ -7,9 +7,12 @@ const cors = require('cors');
 
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
+const transport = require('../config/nodemailer');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const auth = require('../middleware/auth'); // Import the auth middleware
+const { Console } = require('console');
 
 
 
@@ -78,7 +81,7 @@ exRoute.post('/login', async (req, res) => {
     }
 });
 
-exRoute.put('/user',  auth, async (req, res) =>{
+exRoute.put('/user', auth, async (req, res) => {
     try {
         const { userId } = req.user;
 
@@ -88,7 +91,7 @@ exRoute.put('/user',  auth, async (req, res) =>{
             { new: true });
         res.send('User updated');
     } catch (error) {
-        res.status(500).send('Error updating user '+error);
+        res.status(500).send('Error updating user ' + error);
     }
 });
 
@@ -121,6 +124,67 @@ exRoute.get('/users', auth, async (req, res) => {
         res.json(users);
     } catch (error) {
         res.status(500).send('Error fetching users');
+    }
+});
+
+// Route to request password reset
+exRoute.post('/forgot-password', async (req, res) => {
+    try {
+        const { email } = req.body;
+        // const user = await User.findOne({ email: req.body.email });
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).send('No user with that email');
+        }
+
+        // Generate reset token and expiry
+        user.generatePasswordReset();
+        await user.save();
+        // Send the email
+        const mailOptions = {
+            to: user.email,
+            from: "bouda996@gmail.com",
+            subject: 'Password Reset',
+            text: `You are receiving this because you (or someone else) have requested to reset the password for your account.\n\n
+      Your password reset PIN is: ${user.resetPasswordPin}\n\n
+      This PIN is valid for one hour.\n`,
+        };
+        transport.sendMail(mailOptions, (err) => {
+            if (err) {
+                return res.status(500).send('Error sending email   ' + err);
+            }
+            res.status(200).send('Password reset email sent');
+        });
+    } catch (error) {
+        res.status(500).send('Error on the server   ' + error);
+    }
+});
+
+// Route to reset password
+exRoute.post('/reset-password', async (req, res) => {
+
+    try {
+        const { pin, newPassword } = req.body;
+
+        const user = await User.findOne({
+            resetPasswordPin: pin,
+            resetPasswordExpires: { $gt: Date.now() },
+        });
+
+        if (!user) {
+            return res.status(400).send('Password reset token is invalid or has expired');
+        }
+
+        // Update the user's password
+        user.password = bcrypt.hashSync(newPassword, 10);
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+
+        await user.save();
+
+        res.status(200).send('Password has been reset');
+    } catch (error) {
+        res.status(500).send('Error on the server  ' + error);
     }
 });
 

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 const BMISchema = require('./bmi').schema;
 
 const UserSchema = new mongoose.Schema({
@@ -50,7 +51,18 @@ const UserSchema = new mongoose.Schema({
     default: ""
   },
   bmiHistory: [BMISchema],
+  resetPasswordPin: {
+    type: String,
+  },
+  resetPasswordExpires: {
+    type: Date,
+  },
 });
+
+UserSchema.methods.generatePasswordReset = function() {
+  this.resetPasswordPin = Math.floor(1000 + Math.random() * 9000).toString(); // Generate a 4-digit PIN
+  this.resetPasswordExpires = Date.now() + 3600000; // Expires in 1 hour
+};
 
 module.exports = mongoose.model('User', UserSchema);
 
