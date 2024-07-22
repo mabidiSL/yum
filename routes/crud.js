@@ -14,11 +14,15 @@ const User = require('../models/user');
 const auth = require('../middleware/auth'); // Import the auth middleware
 const { Console } = require('console');
 
+const upload = require('../config/multerConfig');
+const b2 = require('../config/b2Config');
+const fs = require('fs');
+const path = require('path');
 
 
-// const MONGO_URI = 'mongodb+srv://mohamedabidi:G25uLQMzh18fiKA0@slcluster.opmphm7.mongodb.net/?retryWrites=true&w=majority&appName=SLCluster';
+const bucketName = 'yummy-user-p';
+
 const MONGO_URI = 'mongodb+srv://bouda996:SGVSNwxBaVVubMdC@yummyuser.h2ltahd.mongodb.net/?retryWrites=true&w=majority&appName=yummyuser';
-// const SECRET_KEY = '9f45e9d85c0c552ce01aeebd9db0da30918f941ea2381e758fc1f49254a033e0';
 const SECRET_KEY = '9f45e9d85c0c552ce01aeebd9db0da30918f941ea2381e758fc1f49254a033e0';
 
 
@@ -92,6 +96,44 @@ exRoute.put('/user', auth, async (req, res) => {
         res.send('User updated');
     } catch (error) {
         res.status(500).send('Error updating user ' + error);
+    }
+});
+
+//upload user profile image
+exRoute.post('/upload', upload.single('file'), async (req, res) => {
+    try {
+        const fileContent = fs.readFileSync(req.file.path);
+        const params = {
+            Bucket: bucketName,
+            Key: req.file.filename,
+            Body: fileContent,
+            ContentType: req.file.mimetype,
+        };
+
+        const data = await b2.upload(params).promise();
+
+        fs.unlinkSync(req.file.path); // Remove file from server after upload
+
+        res.status(200).json({ fileUrl: data.Location });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+//delete user profile image
+
+exRoute.delete('/delete/:filename', async (req, res) => {
+    try {
+        const params = {
+            Bucket: bucketName,
+            Key: req.params.filename,
+        };
+
+        await b2.deleteObject(params).promise();
+
+        res.status(200).json({ message: 'File deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 });
 
