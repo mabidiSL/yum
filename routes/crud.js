@@ -88,7 +88,7 @@ exRoute.post('/login', async (req, res) => {
 exRoute.put('/user', auth, async (req, res) => {
     try {
         const { userId } = req.user;
-
+        console.log(req.body);
         await User.findByIdAndUpdate(
             userId,
             req.body,

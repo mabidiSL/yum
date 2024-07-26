@@ -4,9 +4,9 @@ const BMISchema = require('./bmi').schema;
 const RecipeSchema = require('./recipe').schema;
 
 const UserSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  username: { type: String, required: true, unique: true, },
+  email: { type: String, required: true, unique: true, },
+  password: { type: String, required: true, },
   registrationDate: {
     type: Date,
     default: Date.now,
@@ -16,7 +16,8 @@ const UserSchema = new mongoose.Schema({
     default: Date.now,
   },
   emailVerifiedAt: {
-    type: Boolean, required: true,
+    type: Boolean,
+    required: true,
     default: false
   },
   image: {
@@ -65,7 +66,7 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-UserSchema.methods.generatePasswordReset = function() {
+UserSchema.methods.generatePasswordReset = function () {
   this.resetPasswordPin = Math.floor(1000 + Math.random() * 9000).toString(); // Generate a 4-digit PIN
   this.resetPasswordExpires = Date.now() + 3600000; // Expires in 1 hour
 };
