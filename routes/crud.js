@@ -230,6 +230,60 @@ exRoute.post('/reset-password', async (req, res) => {
     }
 });
 
+exRoute.post('/recepiesLikes', async (req, res) => {
+    try {
+        const { recipeId } = req.body;
+
+        if (!recipeId) {
+          return res.status(400).json({ error: 'Recipe ID is required' });
+        }
+      
+        let recipe = recipes.find(r => r.id === recipeId);
+      
+        if (recipe) {
+          recipe.likes += 1;
+        } else {
+          recipe = { id: recipeId, likes: 1 };
+          recipes.push(recipe);
+        }
+      
+        res.json(recipe);
+    } catch (error) {
+        console.error('Error registering user:', error);
+        res.status(500).send('Error registering user');
+    }
+});
+
+exRoute.get('/recepiesLikes', async (req, res) => {
+    try {
+        const { username, email, password } = req.body;
+
+        // Log the received body
+        console.log('Request Body:', req.body);
+
+        // Check if any of the required fields are missing
+        if (!username || !email || !password) {
+            return res.status(400).send('Missing required fields');
+        }
+
+        // Check if the user already exists
+        const user = await User.findOne({ email });
+        if (user) {
+            return res.status(400).send('User already exists');
+        }
+
+        // Hash the password and create a new user
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User({ username, email, password: hashedPassword });
+        await newUser.save();
+
+        res.status(201).send('User registered');
+    } catch (error) {
+        console.error('Error registering user:', error);
+        res.status(500).send('Error registering user');
+    }
+});
+
 exRoute.use('/test', function (req, res, next) {
     console.log("crud working");
     res.sendStatus(404);
