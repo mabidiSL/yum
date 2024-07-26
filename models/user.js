@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const BMISchema = require('./bmi').schema;
+const RecipeSchema = require('./recipe').schema;
 
 const UserSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
@@ -55,6 +56,7 @@ const UserSchema = new mongoose.Schema({
     default: "Female"
   },
   bmiHistory: [BMISchema],
+  favoriteRecipies: [RecipeSchema],
   resetPasswordPin: {
     type: String,
   },
