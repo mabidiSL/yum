@@ -260,11 +260,11 @@ exRoute.post('/recepies-likes', async (req, res) => {
 exRoute.get('/recepies-likes', async (req, res) => {
 
     console.log('Request Body:', req.body);
-    console.log('Request Body:', req.params);
-    console.log('Request Body:', req.query);
+    console.log('Request param:', req.params);
+    console.log('Request query:', req.query);
 
     try {
-        const { recipeId } = req.body;
+        const { recipeId } = req.query;
 
         // Check if any of the required fields are missing
         if (!recipeId) {
