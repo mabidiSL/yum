@@ -234,7 +234,7 @@ exRoute.post('/recepies-likes', async (req, res) => {
 
     try {
 
-        const { recipeId } = req.body;
+        const { recipeId, operation } = req.body;
 
         if (!recipeId) {
             return res.status(400).send({ error: 'Recipe ID is required' });
@@ -243,7 +243,7 @@ exRoute.post('/recepies-likes', async (req, res) => {
         const recipe = await Recipe.findOne({ recipeId });
 
         if (recipe) {
-            recipe.likesNumber = Number(recipe.likesNumber) + 1;
+            operation=="add"?recipe.likesNumber = Number(recipe.likesNumber) + 1:recipe.likesNumber = Number(recipe.likesNumber) - 1;
             await recipe.save();
         } else {
             const newRecipe = new Recipe({ recipeId: recipeId, likesNumber: 1 });
