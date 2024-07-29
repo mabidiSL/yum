@@ -11,6 +11,7 @@ const crypto = require('crypto');
 const transport = require('../config/nodemailer');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const Recipe = require('../models/recipesLikes');
 const auth = require('../middleware/auth'); // Import the auth middleware
 const { Console } = require('console');
 
@@ -25,15 +26,12 @@ const bucketName = 'yummy-user-p';
 const MONGO_URI = 'mongodb+srv://bouda996:SGVSNwxBaVVubMdC@yummyuser.h2ltahd.mongodb.net/?retryWrites=true&w=majority&appName=yummyuser';
 const SECRET_KEY = '9f45e9d85c0c552ce01aeebd9db0da30918f941ea2381e758fc1f49254a033e0';
 
-
 // Connect to MongoDB
 mongoose.connect(MONGO_URI);
-
 
 // Middleware
 app.use(cors());
 app.use(express.json());
-
 
 exRoute.post('/register', async (req, res) => {
     try {
@@ -230,57 +228,53 @@ exRoute.post('/reset-password', async (req, res) => {
     }
 });
 
-exRoute.post('/recepiesLikes', async (req, res) => {
+exRoute.post('/recepies-likes', async (req, res) => {
+
+    console.log('Request Body:', req.body);
+
     try {
+
         const { recipeId } = req.body;
 
         if (!recipeId) {
-          return res.status(400).json({ error: 'Recipe ID is required' });
+            return res.status(400).send({ error: 'Recipe ID is required' });
         }
-      
-        let recipe = recipes.find(r => r.id === recipeId);
-      
+
+        const recipe = await Recipe.findOne({ recipeId });
+
         if (recipe) {
-          recipe.likes += 1;
+            recipe.likesNumber = Number(recipe.likesNumber) + 1;
+            await recipe.save();
         } else {
-          recipe = { id: recipeId, likes: 1 };
-          recipes.push(recipe);
+            const newRecipe = new Recipe({ recipeId: recipeId, likesNumber: 1 });
+            await newRecipe.save();
         }
-      
-        res.json(recipe);
+
+        res.status(200).send('recipe liked');
     } catch (error) {
-        console.error('Error registering user:', error);
-        res.status(500).send('Error registering user');
+        console.error('Error saving recipe:', error);
+        res.status(500).send('Error recipe');
     }
 });
 
-exRoute.get('/recepiesLikes', async (req, res) => {
-    try {
-        const { username, email, password } = req.body;
+exRoute.get('/recepies-likes', async (req, res) => {
 
-        // Log the received body
-        console.log('Request Body:', req.body);
+    console.log('Request Body:', req.body);
+
+    try {
+        const { recipeId } = req.body;
 
         // Check if any of the required fields are missing
-        if (!username || !email || !password) {
-            return res.status(400).send('Missing required fields');
+        if (!recipeId) {
+            return res.status(400).json({ error: 'Recipe ID is required' });
         }
 
-        // Check if the user already exists
-        const user = await User.findOne({ email });
-        if (user) {
-            return res.status(400).send('User already exists');
-        }
-
-        // Hash the password and create a new user
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({ username, email, password: hashedPassword });
-        await newUser.save();
-
-        res.status(201).send('User registered');
+        const recipe = await Recipe.findOne({ recipeId });
+        if (!recipe) return res.status(404).send('Recipe not found');
+        res.json(recipe);
     } catch (error) {
-        console.error('Error registering user:', error);
-        res.status(500).send('Error registering user');
+        console.error('Error finding recipe:', error);
+        res.status(500).send('Error finding recipe');
     }
 });
 
