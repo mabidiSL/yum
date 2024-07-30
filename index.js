@@ -2,12 +2,14 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 const crud = require('./routes/crud');
+const recipecrud = require('./routes/crud_recipe');
 
 
 
 const PORT = process.env.PORT || 3000;
 
 app.use('/', crud);
+app.use('/', recipecrud);
 
 
 app.listen(PORT, () =>

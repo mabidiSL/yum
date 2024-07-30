@@ -243,7 +243,7 @@ exRoute.post('/recepies-likes', async (req, res) => {
         const recipe = await Recipe.findOne({ recipeId });
 
         if (recipe) {
-            operation=="add"?recipe.likesNumber = Number(recipe.likesNumber) + 1:recipe.likesNumber = Number(recipe.likesNumber) - 1;
+            operation == "add" ? recipe.likesNumber = Number(recipe.likesNumber) + 1 : recipe.likesNumber = Number(recipe.likesNumber) - 1;
             await recipe.save();
         } else {
             const newRecipe = new Recipe({ recipeId: recipeId, likesNumber: 1 });
