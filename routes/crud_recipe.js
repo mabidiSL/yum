@@ -46,10 +46,23 @@ rxRoute.post('/recipe', auth, async (req, res) => {
     }
 });
 
-//get recipes
-rxRoute.get('/recipe', async (req, res) => {
+//get all recipes
+rxRoute.get('/recipes', async (req, res) => {
     try {
         const recipes = await UserRecipe.find();
+        console.log(recipes);
+        res.json(recipes);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+//get recipe by id
+rxRoute.get('/recipe', async (req, res) => {
+    try {
+        const { _id } = req.body;
+        console.log(req.body);
+        const recipes = await UserRecipe.findById(_id,);
         res.json(recipes);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -83,6 +96,18 @@ rxRoute.delete('/recipe', auth, async (req, res) => {
     }
 });
 
+//retrieve all recipes for a specific user
+rxRoute.get('/user-recipes', async (req, res) => {
+    try {
+
+        const { idUser } = req.query;
+
+        const userRecipes = await UserRecipe.find({ idUser });
+        res.json(userRecipes);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 
 //testing api
 rxRoute.use('/test', function (req, res, next) {
