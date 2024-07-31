@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
+const crypto = require('crypto');
 
 const { Schema } = mongoose;
 
 const userRecipeSchema = new Schema({
-  idUser: { type: String, required: true },
+  idMeal: { type: String, required: true, default: crypto.randomBytes(16).toString("hex") },
+  idUser: { type: String, required: true, },
   strMeal: { type: String, required: true },
   strDrinkAlternate: { type: String, required: false },
   strCategory: { type: [String], required: true },
