@@ -60,10 +60,13 @@ rxRoute.get('/recipes', async (req, res) => {
 //get recipe by id
 rxRoute.get('/recipe', async (req, res) => {
     try {
-        const { idMeal } = req.query;
-        console.log(req.body);
-        const recipes = await UserRecipe.findById(idMeal);
-        res.json(recipes);
+        console.log(req.params);
+        console.log(req.query.idMeal);
+        const recipe = await UserRecipe.findOne({ idMeal: req.query.idMeal });
+        if (!recipe) {
+            return res.status(404).json({ message: 'Recipe not found' });
+        }
+        res.json(recipe);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
