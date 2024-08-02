@@ -54,7 +54,7 @@ const UserSchema = new mongoose.Schema({
   },
   gender: {
     type: String,
-    default: "Female"
+    default: ""
   },
   bmiHistory: [BMISchema],
   favoriteRecipies: [RecipeSchema],
