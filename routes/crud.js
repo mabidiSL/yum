@@ -91,7 +91,10 @@ exRoute.put('/user', auth, async (req, res) => {
             userId,
             req.body,
             { new: true });
-        res.send('User updated');
+
+        const user = await User.findById(userId).select('-password');
+        if (!user) return res.status(404).send('User not found');
+        res.send(user);
     } catch (error) {
         res.status(500).send('Error updating user ' + error);
     }
