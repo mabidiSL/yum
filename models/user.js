@@ -64,17 +64,17 @@ const UserSchema = new mongoose.Schema({
   },
   bmiHistory: [BMISchema],
   favoriteRecipies: [RecipeSchema],
-  resetPasswordPin: {
+  pin: {
     type: String,
   },
-  resetPasswordExpires: {
+  pinExpires: {
     type: Date,
   },
 });
 
-UserSchema.methods.generatePasswordReset = function () {
-  this.resetPasswordPin = Math.floor(1000 + Math.random() * 9000).toString(); // Generate a 4-digit PIN
-  this.resetPasswordExpires = Date.now() + 3600000; // Expires in 1 hour
+UserSchema.methods.generatePin = function () {
+  this.pin = Math.floor(1000 + Math.random() * 9000).toString(); // Generate a 4-digit PIN
+  this.pinExpires = Date.now() + 3600000; // Expires in 1 hour
 };
 
 module.exports = mongoose.model('User', UserSchema);
