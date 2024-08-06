@@ -61,7 +61,7 @@ exRoute.post('/register', async (req, res) => {
             to: newUser.email,
             from: "bouda996@gmail.com",
             subject: 'Email Verification',
-            html:`<!--
+            html: `<!--
 * This email was built using Tabular.
 * For more information, visit https://tabular.email
 -->
@@ -325,7 +325,7 @@ img,p{margin:0;Margin:0;font-family:Fira Sans,BlinkMacSystemFont,Segoe UI,Helvet
 </tr></table>
 </td></tr></table></td></tr></table></div></body>
 </html>`,
- 
+
         };
         transport.sendMail(mailOptions, (err, info) => {
             if (err) {
@@ -343,7 +343,7 @@ img,p{margin:0;Margin:0;font-family:Fira Sans,BlinkMacSystemFont,Segoe UI,Helvet
     }
 });
 
-exRoute.get('/verify-email', async (req, res) => {
+exRoute.post('/verify-email', async (req, res) => {
     const { pin } = req.body;
 
     try {
