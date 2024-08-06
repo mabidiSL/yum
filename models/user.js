@@ -64,6 +64,9 @@ const UserSchema = new mongoose.Schema({
   },
   bmiHistory: [BMISchema],
   favoriteRecipies: [RecipeSchema],
+  verificationToken: {
+    type: String,
+  },
   pin: {
     type: String,
   },
