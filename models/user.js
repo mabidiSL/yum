@@ -18,7 +18,7 @@ const UserSchema = new mongoose.Schema({
   },
   emailVerifiedAt: {
     type: Boolean,
-    required: true,
+    required: false,
     default: false
   },
   image: {
