@@ -140,19 +140,14 @@ exRoute.post('/login', async (req, res) => {
         const user = await User.findOne({ email });
         if (!user) return res.status(400).send('User not found');
         if (!user.emailVerifiedAt) {
-
-            // Generate reset token and expiry
-            // user.generatePin();
-            // Generate a verification token
             const token2 = jwt.sign({ userId: user._id }, EMAIL_SECRET, { expiresIn: '1h' });
             console.log(token2);
             user.verificationToken = token2;
             await sendVerificationEmail(user);
-            return res.status(400).send('Email not verified. A new verification email has been sent.');
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).send('Invalid credentials');
+        if (!isMatch) return res.status(401).send('Invalid credentials');
 
         const token = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: '1h' });
         res.json({ token, username: user.username, userId: user._id });
