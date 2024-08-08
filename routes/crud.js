@@ -59,6 +59,8 @@ exRoute.post('/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new User({ username, email, password: hashedPassword });
 
+
+        await newUser.save();
         // Generate reset token and expiry
         // newUser.generatePin();
 
@@ -69,8 +71,6 @@ exRoute.post('/register', async (req, res) => {
 
 
         await sendVerificationEmail(newUser);
-
-        await newUser.save();
 
 
         res.status(201).json({ message: 'Registration successful. Please check your email to verify your account.' });

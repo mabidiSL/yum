@@ -41,6 +41,10 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: ""
   },
+  unitOfMeasurement: {
+    type: String,
+    default: "Metric"
+  },
   height: {
     type: String,
     default: ""
