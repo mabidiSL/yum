@@ -25,10 +25,6 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: ""
   },
-  language: {
-    type: String,
-    default: "english"
-  },
   instragramUrl: {
     type: String,
     default: ""
