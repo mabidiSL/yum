@@ -361,9 +361,6 @@ exRoute.post('/recepies-likes', async (req, res) => {
 
 exRoute.get('/recepies-likes', async (req, res) => {
 
-    console.log('Request Body:', req.body);
-    console.log('Request param:', req.params);
-    console.log('Request query:', req.query);
 
     try {
         const { recipeId } = req.query;

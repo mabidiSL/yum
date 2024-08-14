@@ -1,33 +1,44 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
+
+const LaunchDetail = require('../models/launch_details');
 const app = express();
 const aRoute = express.Router();
 
 const cors = require('cors');
 
 
+const mongoose = require('mongoose');
+
+const MONGO_URI = 'mongodb+srv://bouda996:SGVSNwxBaVVubMdC@yummyuser.h2ltahd.mongodb.net/?retryWrites=true&w=majority&appName=yummyuser';
+
+// Connect to MongoDB
+mongoose.connect(MONGO_URI);
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-let launchDetails = [];
-
-// Endpoint to post time and location
-app.post('/launch-details', (req, res) => {
-    const { date, location } = req.body;
-
-    // Save the launch details
-    launchDetails.push({ date, location });
-
-    res.status(201).send('Launch details saved successfully');
+// Endpoint to post launch details
+aRoute.post('/launch-details', async (req, res) => {
+    try {
+        const { time, location } = req.body;
+        const launchDetail = new LaunchDetail({ time, location });
+        await launchDetail.save();
+        res.status(201).send(launchDetail);
+    } catch (error) {
+        res.status(400).send(error);
+    }
 });
 
-// Endpoint to get the launch details
-app.get('/launch-details', (req, res) => {
-    res.status(200).json(launchDetails);
+// Endpoint to get all launch details
+aRoute.get('/launch-details', async (req, res) => {
+    try {
+        const launchDetails = await LaunchDetail.find({});
+        res.status(200).send(launchDetails);
+    } catch (error) {
+        res.status(500).send(error);
+    }
 });
 
 
-module.exports = xRoute;
+module.exports = aRoute;
