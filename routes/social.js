@@ -49,18 +49,19 @@ sRoute.post('/recipes/comments', auth, async (req, res) => {
     }
 });
 
-sRoute.get('/recipes/comments', auth, async (req, res) => {
+sRoute.get('/recipes/:recipeId/comments', async (req, res) => {
     try {
-        const { recipeId } = req.query.recipeId;
 
-        console.log(recipeId);
+        console.log(req.params);
+        const { recipeId } = req.params;
+
         const comment = await RecipeComment.findOne({ recipeId });
         if (!comment) return res.status(400).send('comment not found');
 
 
         res.json({ comment });
     } catch (error) {
-        res.status(500).send('Error logging in user: ' + error);
+        res.status(500).send('Error getting recipe: ' + error);
     }
 });
 
