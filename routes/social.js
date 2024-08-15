@@ -49,9 +49,9 @@ sRoute.post('/recipes/comments', auth, async (req, res) => {
     }
 });
 
-sRoute.post('/recipes/comments', auth, async (req, res) => {
+sRoute.get('/recipes/comments', auth, async (req, res) => {
     try {
-        const { recipeId } = req.body;
+        const { recipeId } = req.query.recipeId;
 
         console.log(recipeId);
         const comment = await RecipeComment.findOne({ recipeId });
