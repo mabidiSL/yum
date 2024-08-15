@@ -1,6 +1,7 @@
 const express = require('express');
 
 const RecipeComment = require('../models/recipe_comment');
+const User = require('../models/user');
 const app = express();
 const sRoute = express.Router();
 
@@ -64,6 +65,91 @@ sRoute.get('/recipes/:recipeId/comments', async (req, res) => {
         res.status(500).send('Error getting recipe: ' + error);
     }
 });
+
+
+// following user system
+
+//to follow
+const followUser = async (userId, followUserId) => {
+    try {
+
+        console.log(followUserId);
+        console.log(userId);
+        // Add followUserId to the 'following' array of the current user
+        await User.findByIdAndUpdate(userId, { $addToSet: { following: followUserId } });
+
+        // Add userId to the 'followers' array of the followUserId
+        await User.findByIdAndUpdate(followUserId, { $addToSet: { followers: userId } });
+
+        console.log('Successfully followed the user');
+    } catch (error) {
+        console.error('Error following the user follow function :', error);
+    }
+};
+
+//to unfollow
+const unfollowUser = async (userId, unfollowUserId) => {
+    try {
+        // Remove unfollowUserId from the 'following' array of the current user
+        await User.findByIdAndUpdate(userId, { $pull: { following: unfollowUserId } });
+
+        // Remove userId from the 'followers' array of the unfollowUserId
+        await User.findByIdAndUpdate(unfollowUserId, { $pull: { followers: userId } });
+
+        console.log('Successfully unfollowed the user');
+    } catch (error) {
+        console.error('Error unfollowing the user unfollow function:', error);
+    }
+};
+
+//get followers and followed List
+const getUserWithFollowersAndFollowing = async (userId) => {
+    try {
+        const user = await User.findById(userId)
+            .populate('followers', 'username')
+            .populate('following', 'username')
+            .exec();
+
+        console.log('User:', user);
+    } catch (error) {
+        console.error('Error retrieving user data:', error);
+    }
+};
+
+
+sRoute.post('/user/follow', auth, async (req, res) => {
+    const userId = req.body.userId; // ID of the current user
+    const followUserId = req.body.followedId; // ID of the user to follow
+    try {
+        await followUser(userId, followUserId);
+        res.status(200).send('Followed the user');
+    } catch (error) {
+        res.status(500).send('Error following the user', error);
+    }
+});
+
+sRoute.post('/user/unfollow', auth, async (req, res) => {
+    const userId = req.body.userId; // ID of the current user
+    const unfollowUserId = req.body.followedId; // ID of the user to unfollow
+    try {
+        await unfollowUser(userId, unfollowUserId);
+        res.status(200).send('Unfollowed the user');
+    } catch (error) {
+        res.status(500).send('Error unfollowing the user', error);
+    }
+});
+
+// sRoute.get('/user/:id', auth, async (req, res) => {
+//     const userId = req.params.id;
+
+//     try {
+//         const user = await getUserWithFollowersAndFollowing(userId);
+//         res.status(200).json(user);
+//     } catch (error) {
+//         res.status(500).send('Error retrieving user data');
+//     }
+// });
+
 
 
 
