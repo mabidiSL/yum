@@ -260,6 +260,19 @@ exRoute.get('/user', auth, async (req, res) => {
     }
 });
 
+//get any user by id
+exRoute.get('/user/:_id', async (req, res) => {
+    try {
+        console.log(req.params);
+        const { _id } =  req.params;
+        const user = await User.findById(_id).select('-password');
+        if (!user) return res.status(404).send('User not found');
+        res.json(user);
+    } catch (error) {
+        res.status(500).send('Error fetching user');
+    }
+});
+
 exRoute.get('/users', auth, async (req, res) => {
     try {
         const users = await User.find().select('-password');
