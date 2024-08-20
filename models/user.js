@@ -16,60 +16,109 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  emailVerifiedAt: {
-    type: Boolean,
-    required: false,
-    default: false
-  },
-  image: {
+  
+  logo: {
     type: String,
     default: ""
   },
-  instragramUrl: {
+  wallet: {
+    type: Number,
+    default: ""
+  },
+  bankName: {
     type: String,
     default: ""
   },
-  facebookUrl: {
+  
+  url: {
     type: String,
     default: ""
   },
-  pinterestUrl: {
+  phone: {
     type: String,
     default: ""
   },
-  youtubeUrl: {
-    type: String,
-    default: ""
-  },
-  unitOfMeasurement: {
-    type: String,
-    default: "Metric"
-  },
-  height: {
-    type: String,
-    default: ""
-  },
-  weight: {
-    type: String,
-    default: ""
-  },
-  birthdate: {
-    type: String,
-    default: ""
-  },
-  gender: {
-    type: String,
-    default: ""
-  },
-  phone: PhoneSchema,
   country: {
     type: String,
     default: ""
   },
-  followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  bmiHistory: [BMISchema],
-  favoriteRecipies: [RecipeSchema],
+  //modification for infinity
+  user_type: {
+    type: String,
+    default: ""
+  },
+  status: {
+    type: String,
+    default: ""
+  },
+  city: {
+    type: String,
+    default: ""
+  },
+  street: {
+    type: String,
+    default: ""
+  },
+  building: {
+    type: String,
+    default: ""
+  },
+  company_registration: {
+    type: String,
+    default: ""
+  },
+  //commented to adapt to infinity
+  // emailVerifiedAt: {
+  //   type: Boolean,
+  //   required: false,
+  //   default: false
+  // },
+  // image: {
+  //   type: String,
+  //   default: ""
+  // },
+  // instragramUrl: {
+  //   type: String,
+  //   default: ""
+  // },
+  // facebookUrl: {
+  //   type: String,
+  //   default: ""
+  // },
+  // pinterestUrl: {
+  //   type: String,
+  //   default: ""
+  // },
+  // youtubeUrl: {
+  //   type: String,
+  //   default: ""
+  // },
+  // unitOfMeasurement: {
+  //   type: String,
+  //   default: "Metric"
+  // },
+  // height: {
+  //   type: String,
+  //   default: ""
+  // },
+  // weight: {
+  //   type: String,
+  //   default: ""
+  // },
+  // birthdate: {
+  //   type: String,
+  //   default: ""
+  // },
+  // gender: {
+  //   type: String,
+  //   default: ""
+  // },
+  // phone: PhoneSchema,
+  
+  // followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  // following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  // bmiHistory: [BMISchema],
+  // favoriteRecipies: [RecipeSchema],
   verificationToken: {
     type: String,
   },

@@ -69,8 +69,8 @@ exRoute.post('/register', async (req, res) => {
         const token = jwt.sign({ userId: newUser._id }, EMAIL_SECRET, { expiresIn: '1h' });
         newUser.verificationToken = token;
 
-
-        await sendVerificationEmail(newUser);
+        //commented to adapt to infinity
+        // await sendVerificationEmail(newUser);
 
 
         res.status(201).json({ message: 'Registration successful. Please check your email to verify your account.' });
@@ -139,12 +139,13 @@ exRoute.post('/login', async (req, res) => {
         console.log(password);
         const user = await User.findOne({ email });
         if (!user) return res.status(400).send('User not found');
-        if (!user.emailVerifiedAt) {
-            const token2 = jwt.sign({ userId: user._id }, EMAIL_SECRET, { expiresIn: '1h' });
-            console.log(token2);
-            user.verificationToken = token2;
-            await sendVerificationEmail(user);
-        }
+        //commented to adapt to infinity
+        // if (!user.emailVerifiedAt) {
+        //     const token2 = jwt.sign({ userId: user._id }, EMAIL_SECRET, { expiresIn: '1h' });
+        //     console.log(token2);
+        //     user.verificationToken = token2;
+        //     await sendVerificationEmail(user);
+        // }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(401).send('Invalid credentials');
@@ -155,6 +156,55 @@ exRoute.post('/login', async (req, res) => {
         res.status(500).send('Error logging in user: ' + error);
     }
 });
+
+//added for the infinity project
+exRoute.post('/admin/add-user', auth, async (req, res) => {
+    try {
+        const { 
+            username, email, password, logo, wallet, bankName, 
+            url, phone, country, user_type, status, city, 
+            street, building, company_registration 
+        } = req.body;
+
+        console.log('Request Body:', req.body);
+        console.log('Request Body:', email);
+        console.log('Request Body:', password);
+
+        if (!username || !email || !password) {
+            return res.status(400).send('Missing required fields');
+        }
+
+        const user = await User.findOne({ email });
+        if (user) {
+            return res.status(400).send('User already exists');
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User({
+            username, email, password: hashedPassword, logo, wallet, bankName, 
+            url, phone, country, user_type, status, city, 
+            street, building, company_registration 
+        });
+
+        await newUser.save();
+
+        res.status(201).json({ message: 'User added successfully by admin.' });
+
+    } catch (error) {
+        console.error('Error adding user by admin:', error);
+        res.status(500).send('Error adding user by admin');
+    }
+});
+exRoute.get('/users/with-user-type', async (req, res) => {
+    try {
+        const merchants = await User.find({ user_type: 'merchant' });
+        res.json(merchants);
+    } catch (error) {
+        console.error('Error fetching users with user_type:', error);
+        res.status(500).send('Error fetching users with user_type');
+    }
+});
+/*************************************************************************************/
 
 exRoute.put('/user', auth, async (req, res) => {
     try {
@@ -264,7 +314,7 @@ exRoute.get('/user', auth, async (req, res) => {
 exRoute.get('/user/:_id', async (req, res) => {
     try {
         console.log(req.params);
-        const { _id } =  req.params;
+        const { _id } = req.params;
         const user = await User.findById(_id).select('-password');
         if (!user) return res.status(404).send('User not found');
         res.json(user);
