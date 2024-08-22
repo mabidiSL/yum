@@ -336,37 +336,37 @@ exRoute.get('/users', auth, async (req, res) => {
 });
 
 // Route to request password reset
-exRoute.post('/forgot-password', async (req, res) => {
-    try {
-        const { email } = req.body;
-        // const user = await User.findOne({ email: req.body.email });
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(404).send('No user with that email');
-        }
+// exRoute.post('/forgot-password', async (req, res) => {
+//     try {
+//         const { email } = req.body;
+//         // const user = await User.findOne({ email: req.body.email });
+//         const user = await User.findOne({ email });
+//         if (!user) {
+//             return res.status(404).send('No user with that email');
+//         }
 
-        // Generate reset token and expiry
-        user.generatePin();
-        await user.save();
-        // Send the email
-        const mailOptions = {
-            to: user.email,
-            from: "bouda996@gmail.com",
-            subject: 'Password Reset',
-            text: `You are receiving this because you (or someone else) have requested to reset the password for your account.\n\n
-      Your password reset PIN is: ${user.Pin}\n\n
-      This PIN is valid for one hour.\n`,
-        };
-        transport.sendMail(mailOptions, (err) => {
-            if (err) {
-                return res.status(500).send('Error sending email   ' + err);
-            }
-            res.status(200).send('Password reset email sent');
-        });
-    } catch (error) {
-        res.status(500).send('Error on the server   ' + error);
-    }
-});
+//         // Generate reset token and expiry
+//         user.generatePin();
+//         await user.save();
+//         // Send the email
+//         const mailOptions = {
+//             to: user.email,
+//             from: "bouda996@gmail.com",
+//             subject: 'Password Reset',
+//             text: `You are receiving this because you (or someone else) have requested to reset the password for your account.\n\n
+//       Your password reset PIN is: ${user.Pin}\n\n
+//       This PIN is valid for one hour.\n`,
+//         };
+//         transport.sendMail(mailOptions, (err) => {
+//             if (err) {
+//                 return res.status(500).send('Error sending email   ' + err);
+//             }
+//             res.status(200).send('Password reset email sent');
+//         });
+//     } catch (error) {
+//         res.status(500).send('Error on the server   ' + error);
+//     }
+// });
 
 // // Route to reset password
 // exRoute.post('/reset-password', async (req, res) => {
@@ -423,7 +423,7 @@ exRoute.post('/forgot-password', async (req, res) => {
         const mailOptions = {
             to: user.email,
             from: "bouda996@gmail.com",
-            subject: 'Password Reset',
+            subject: 'Reset Password Link',
             text: `You are receiving this because you (or someone else) have requested to reset the password for your account.\n\n
       Please click on the following link, or paste it into your browser to complete the process:\n\n
       ${resetLink}\n\n
