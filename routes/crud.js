@@ -35,10 +35,12 @@ mongoose.connect(MONGO_URI);
 
 // Middleware
 app.use(cors({
-    origin: 'http://localhost:4200', // Allow requests from this origin
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific methods if needed
+    origin: '*', // Allow requests from this origin
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true // Enable if your API requires credentials (cookies, authorization headers, etc.)
 }));
+
 app.use(express.json());
 
 exRoute.post('/register', async (req, res) => {
