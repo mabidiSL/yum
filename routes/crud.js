@@ -138,8 +138,6 @@ exRoute.get('/verify-email', async (req, res) => {
 
 
 exRoute.post('/login', async (req, res) => {
-
-    res.set('Access-Control-Allow-Origin', 'http://localhost:4200');
     try {
         const { email, password } = req.body;
 
