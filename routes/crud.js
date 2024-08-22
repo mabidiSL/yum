@@ -34,24 +34,12 @@ const EMAIL_SECRET = '9f45e9d85c0c552ce01aeebd9db0da30918f941ea2381e758fc1f49254
 mongoose.connect(MONGO_URI);
 
 // Middleware
-// app.use(cors({
-//     origin: '*', // Allow requests from this origin
-//     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-//     allowedHeaders: ['Content-Type', 'Authorization'],
-//     credentials: true // Enable if your API requires credentials (cookies, authorization headers, etc.)
-// }));
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:4200'); // Change this to the origin you want to allow
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); // Allowed methods
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // Allowed headers
-    res.setHeader('Access-Control-Allow-Credentials', 'true'); // Allow credentials (if needed)
-
-    if (req.method === 'OPTIONS') {
-        return res.sendStatus(200); // Handle preflight requests
-    }
-
-    next();
-});
+app.use(cors({
+    origin: '*', // Allow requests from this origin
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true // Enable if your API requires credentials (cookies, authorization headers, etc.)
+}));
 
 app.use(express.json());
 
@@ -150,6 +138,8 @@ exRoute.get('/verify-email', async (req, res) => {
 
 
 exRoute.post('/login', async (req, res) => {
+
+    res.set('Access-Control-Allow-Origin', 'http://localhost:4200');
     try {
         const { email, password } = req.body;
 
