@@ -35,17 +35,9 @@ mongoose.connect(MONGO_URI);
 
 // Middleware
 app.use(cors({
-    origin: true, // "true" will copy the domain of the request back
-    // to the reply. If you need more control than this
-    // use a function.
-
-    credentials: true, // This MUST be "true" if your endpoint is
-    // authenticated via either a session cookie
-    // or Authorization header. Otherwise the
-    // browser will block the response.
-
-    methods: 'POST,GET,PUT,OPTIONS,DELETE' // Make sure you're not blocking
-    // pre-flight OPTIONS requests 
+    origin: 'http://localhost:4200', // Allow requests from this origin
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific methods if needed
+    credentials: true // Enable if your API requires credentials (cookies, authorization headers, etc.)
 }));
 app.use(express.json());
 
