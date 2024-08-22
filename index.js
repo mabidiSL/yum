@@ -9,7 +9,7 @@ const social = require('./routes/social');
 
 
 
-const PORT = process.env.PORT || 4200;
+const PORT = process.env.PORT || 3000;
 
 app.use('/', crud);
 app.use('/', recipecrud);
