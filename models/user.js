@@ -128,6 +128,12 @@ const UserSchema = new mongoose.Schema({
   pinExpires: {
     type: Date,
   },
+  resetPasswordToken: {
+    type: String,
+  },
+  resetPasswordExpires:  {
+    type: Date,
+  },
 });
 
 UserSchema.methods.generatePin = function () {
