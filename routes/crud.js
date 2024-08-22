@@ -34,7 +34,19 @@ const EMAIL_SECRET = '9f45e9d85c0c552ce01aeebd9db0da30918f941ea2381e758fc1f49254
 mongoose.connect(MONGO_URI);
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: true, // "true" will copy the domain of the request back
+    // to the reply. If you need more control than this
+    // use a function.
+
+    credentials: true, // This MUST be "true" if your endpoint is
+    // authenticated via either a session cookie
+    // or Authorization header. Otherwise the
+    // browser will block the response.
+
+    methods: 'POST,GET,PUT,OPTIONS,DELETE' // Make sure you're not blocking
+    // pre-flight OPTIONS requests 
+}));
 app.use(express.json());
 
 exRoute.post('/register', async (req, res) => {
@@ -160,10 +172,10 @@ exRoute.post('/login', async (req, res) => {
 //added for the infinity project
 exRoute.post('/admin/add-user', auth, async (req, res) => {
     try {
-        const { 
-            username, email, password, logo, wallet, bankName, 
-            url, phone, country, user_type, status, city, 
-            street, building, company_registration 
+        const {
+            username, email, password, logo, wallet, bankName,
+            url, phone, country, user_type, status, city,
+            street, building, company_registration
         } = req.body;
 
         console.log('Request Body:', req.body);
@@ -181,9 +193,9 @@ exRoute.post('/admin/add-user', auth, async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new User({
-            username, email, password: hashedPassword, logo, wallet, bankName, 
-            url, phone, country, user_type, status, city, 
-            street, building, company_registration 
+            username, email, password: hashedPassword, logo, wallet, bankName,
+            url, phone, country, user_type, status, city,
+            street, building, company_registration
         });
 
         await newUser.save();
