@@ -4,6 +4,7 @@ const exRoute = express.Router();
 
 const app = express();
 const cors = require('cors');
+const bodyParser = require('body-parser');
 
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
@@ -34,12 +35,8 @@ const EMAIL_SECRET = '9f45e9d85c0c552ce01aeebd9db0da30918f941ea2381e758fc1f49254
 mongoose.connect(MONGO_URI);
 
 // Middleware
-app.use(cors({
-    origin: '*', // Allow requests from this origin
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true // Enable if your API requires credentials (cookies, authorization headers, etc.)
-}));
+app.use(cors());
+app.use(bodyParser.json());
 
 app.use(express.json());
 
