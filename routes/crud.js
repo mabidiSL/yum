@@ -417,7 +417,7 @@ exRoute.post('/forgot-password', async (req, res) => {
         await user.save();
 
         // Create the reset link
-        const resetLink = `http://localhost:4200/auth/reset-password/${resetToken}`;
+        const resetLink = `http://localhost:4200/auth/update-password/${resetToken}`;
 
         // Send the email
         const mailOptions = {
