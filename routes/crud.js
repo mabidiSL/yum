@@ -457,7 +457,7 @@ exRoute.post('/reset-password/:token', async (req, res) => {
         }
 
         // Set the new password
-        user.password = password; // Make sure to hash the password before saving
+        user.password = bcrypt.hashSync(password, 10); // Make sure to hash the password before saving
         user.resetPasswordToken = undefined; // Clear the reset token and expiry
         user.resetPasswordExpires = undefined;
 
