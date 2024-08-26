@@ -368,6 +368,28 @@ exRoute.post('/forgot-password-mobile', async (req, res) => {
     }
 });
 
+// Route to verify OTP
+exRoute.post('/verify-otp', async (req, res) => {
+    try {
+        const { pin } = req.body;
+
+        const user = await User.findOne({
+            pin: pin,
+            pinExpires: { $gt: Date.now() },
+        });
+
+        if (!user) {
+            return res.status(400).send('OTP is invalid or has expired');
+        }
+
+        // OTP is valid, proceed to next step (e.g., allow password reset)
+        res.status(200).send('OTP verified successfully');
+    } catch (error) {
+        res.status(500).send('Error on the server ' + error);
+    }
+});
+
+
 // Route to reset password
 exRoute.post('/reset-password-mobile', async (req, res) => {
 
