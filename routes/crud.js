@@ -336,65 +336,65 @@ exRoute.get('/users', auth, async (req, res) => {
 });
 
 // Route to request password reset
-// exRoute.post('/forgot-password', async (req, res) => {
-//     try {
-//         const { email } = req.body;
-//         // const user = await User.findOne({ email: req.body.email });
-//         const user = await User.findOne({ email });
-//         if (!user) {
-//             return res.status(404).send('No user with that email');
-//         }
+exRoute.post('/forgot-password-mobile', async (req, res) => {
+    try {
+        const { email } = req.body;
+        // const user = await User.findOne({ email: req.body.email });
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).send('No user with that email');
+        }
 
-//         // Generate reset token and expiry
-//         user.generatePin();
-//         await user.save();
-//         // Send the email
-//         const mailOptions = {
-//             to: user.email,
-//             from: "bouda996@gmail.com",
-//             subject: 'Password Reset',
-//             text: `You are receiving this because you (or someone else) have requested to reset the password for your account.\n\n
-//       Your password reset PIN is: ${user.Pin}\n\n
-//       This PIN is valid for one hour.\n`,
-//         };
-//         transport.sendMail(mailOptions, (err) => {
-//             if (err) {
-//                 return res.status(500).send('Error sending email   ' + err);
-//             }
-//             res.status(200).send('Password reset email sent');
-//         });
-//     } catch (error) {
-//         res.status(500).send('Error on the server   ' + error);
-//     }
-// });
+        // Generate reset token and expiry
+        user.generatePin();
+        await user.save();
+        // Send the email
+        const mailOptions = {
+            to: user.email,
+            from: "bouda996@gmail.com",
+            subject: 'Password Reset',
+            text: `You are receiving this because you (or someone else) have requested to reset the password for your account.\n\n
+      Your password reset PIN is: ${user.Pin}\n\n
+      This PIN is valid for one hour.\n`,
+        };
+        transport.sendMail(mailOptions, (err) => {
+            if (err) {
+                return res.status(500).send('Error sending email   ' + err);
+            }
+            res.status(200).send('Password reset email sent');
+        });
+    } catch (error) {
+        res.status(500).send('Error on the server   ' + error);
+    }
+});
 
-// // Route to reset password
-// exRoute.post('/reset-password', async (req, res) => {
+// Route to reset password
+exRoute.post('/reset-password-mobile', async (req, res) => {
 
-//     try {
-//         const { pin, newPassword } = req.body;
+    try {
+        const { pin, newPassword } = req.body;
 
-//         const user = await User.findOne({
-//             pin: pin,
-//             pinExpires: { $gt: Date.now() },
-//         });
+        const user = await User.findOne({
+            pin: pin,
+            pinExpires: { $gt: Date.now() },
+        });
 
-//         if (!user) {
-//             return res.status(400).send('Password reset token is invalid or has expired');
-//         }
+        if (!user) {
+            return res.status(400).send('Password reset token is invalid or has expired');
+        }
 
-//         // Update the user's password
-//         user.password = bcrypt.hashSync(newPassword, 10);
-//         user.pin = undefined;
-//         user.pinExpires = undefined;
+        // Update the user's password
+        user.password = bcrypt.hashSync(newPassword, 10);
+        user.pin = undefined;
+        user.pinExpires = undefined;
 
-//         await user.save();
+        await user.save();
 
-//         res.status(200).send('Password has been reset');
-//     } catch (error) {
-//         res.status(500).send('Error on the server  ' + error);
-//     }
-// });
+        res.status(200).send('Password has been reset');
+    } catch (error) {
+        res.status(500).send('Error on the server  ' + error);
+    }
+});
 
 /********************** FORGET PWD FOR INFINITY *************************/
 
