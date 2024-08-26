@@ -354,7 +354,7 @@ exRoute.post('/forgot-password-mobile', async (req, res) => {
             from: "bouda996@gmail.com",
             subject: 'Password Reset',
             text: `You are receiving this because you (or someone else) have requested to reset the password for your account.\n\n
-      Your password reset PIN is: ${user.Pin}\n\n
+      Your password reset PIN is: ${user.pin}\n\n
       This PIN is valid for one hour.\n`,
         };
         transport.sendMail(mailOptions, (err) => {
