@@ -7,6 +7,8 @@ const PhoneSchema = require('./phone').schema;
 const UserSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true, },
   email: { type: String, required: true, unique: true, },
+  f_name: { type: String, required: true, },
+  l_name: { type: String, required: true, },
   password: { type: String, required: true, },
   registrationDate: {
     type: Date,
@@ -16,23 +18,46 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  
+  emailVerifiedAt: {
+    type: String,
+    required: false,
+    default: ""
+  },
   logo: {
+    type: String,
+    default: ""
+  },
+  image: {
     type: String,
     default: ""
   },
   wallet: {
     type: Number,
-    default: ""
+  },
+  loyaltyPoint: {
+    type: Number,
   },
   bankName: {
     type: String,
     default: ""
   },
-  
+  referCode: {
+    type: String,
+  },
+  referCount: {
+    type: String,
+    default: ""
+  },
+  totalOrder: {
+    type: String,
+    default: ""
+  },
   url: {
     type: String,
     default: ""
+  },
+  image_full_url: {
+    type: String,
   },
   phone: {
     type: String,
