@@ -217,7 +217,10 @@ exRoute.get('/users/not-approved', async (req, res) => {
 
 exRoute.get('/users/approved', async (req, res) => {
     try {
-        const users = await User.find({ status: 'approved', user_type: 'merchant' });
+        const users = await User.find({
+            status: { $in: ['active', 'inactive'] },
+            user_type: 'merchant'
+        });
         res.json(users);
     } catch (error) {
         console.error('Error fetching users with status:', error);
@@ -247,6 +250,25 @@ exRoute.post('/update-status', async (req, res) => {
         res.status(200).send('User status has been updated');
     } catch (error) {
         res.status(500).send('Error on the server: ' + error);
+    }
+});
+
+exRoute.put('/user/:id', auth, async (req, res) => {
+    try {
+        const { id } = req.params;
+        console.log(req.body);
+
+        const user = await User.findByIdAndUpdate(
+            id,
+            req.body,
+            { new: true }
+        ).select('-password');
+
+        if (!user) return res.status(404).send('User not found');
+
+        res.send(user);
+    } catch (error) {
+        res.status(500).send('Error updating user: ' + error);
     }
 });
 /*************************************************************************************/
