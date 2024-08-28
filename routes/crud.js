@@ -154,7 +154,7 @@ exRoute.post('/login', async (req, res) => {
         if (!isMatch) return res.status(401).send('Invalid credentials');
 
         const token = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: '1h' });
-        res.json({ token, username: user.username, userId: user._id , user:user });
+        res.json({ token, username: user.username, userId: user._id, user: user });
     } catch (error) {
         res.status(500).send('Error logging in user: ' + error);
     }
@@ -168,10 +168,6 @@ exRoute.post('/admin/add-user', auth, async (req, res) => {
             url, phone, country, user_type, status, city,
             street, building, company_registration
         } = req.body;
-
-        console.log('Request Body:', req.body);
-        console.log('Request Body:', email);
-        console.log('Request Body:', password);
 
         if (!username || !email || !password) {
             return res.status(400).send('Missing required fields');
@@ -198,6 +194,7 @@ exRoute.post('/admin/add-user', auth, async (req, res) => {
         res.status(500).send('Error adding user by admin');
     }
 });
+
 exRoute.get('/users/with-user-type', async (req, res) => {
     try {
         const merchants = await User.find({ user_type: 'merchant' });
@@ -205,6 +202,51 @@ exRoute.get('/users/with-user-type', async (req, res) => {
     } catch (error) {
         console.error('Error fetching users with user_type:', error);
         res.status(500).send('Error fetching users with user_type');
+    }
+});
+
+exRoute.get('/users/not-approved', async (req, res) => {
+    try {
+        const users = await User.find({ status: 'notApproved', user_type: 'merchant' });
+        res.json(users);
+    } catch (error) {
+        console.error('Error fetching users with status:', error);
+        res.status(500).send('Error fetching users with status');
+    }
+});
+
+exRoute.get('/users/approved', async (req, res) => {
+    try {
+        const users = await User.find({ status: 'approved', user_type: 'merchant' });
+        res.json(users);
+    } catch (error) {
+        console.error('Error fetching users with status:', error);
+        res.status(500).send('Error fetching users with status');
+    }
+});
+
+// Route to update userStatus
+exRoute.post('/update-status', async (req, res) => {
+    try {
+        const { userId, status } = req.body;
+
+        console.log(userId);
+        console.log(status);
+
+        // Find the user by ID and update the userStatus
+        const user = await User.findOneAndUpdate(
+            { _id: userId }, // Find the user by ID
+            { status: status }, // Update the userStatus
+            { new: true } // Return the updated document
+        );
+
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+
+        res.status(200).send('User status has been updated');
+    } catch (error) {
+        res.status(500).send('Error on the server: ' + error);
     }
 });
 /*************************************************************************************/
@@ -229,15 +271,10 @@ exRoute.put('/user', auth, async (req, res) => {
 // Update user password
 exRoute.put('/:id/password', auth, async (req, res) => {
     const { currentPassword, newPassword } = req.body;
-
-
-
     try {
         const user = await User.findById(req.params.id);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
-        // Check if the current password is correct
-        //   const isMatch = await user.compare(currentPassword);
         const isMatch = bcrypt.compare(currentPassword, user.password);
 
         if (!isMatch) return res.status(400).json({ message: 'Current password is incorrect' });
