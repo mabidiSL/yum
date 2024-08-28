@@ -7,8 +7,8 @@ const PhoneSchema = require('./phone').schema;
 const UserSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true, },
   email: { type: String, required: true, unique: true, },
-  f_name: { type: String, required: true, },
-  l_name: { type: String, required: true, },
+  f_name: { type: String, },
+  l_name: { type: String, },
   password: { type: String, required: true, },
   registrationDate: {
     type: Date,
@@ -139,7 +139,7 @@ const UserSchema = new mongoose.Schema({
   //   default: ""
   // },
   // phone: PhoneSchema,
-  
+
   // followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   // following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   // bmiHistory: [BMISchema],
@@ -156,7 +156,7 @@ const UserSchema = new mongoose.Schema({
   resetPasswordToken: {
     type: String,
   },
-  resetPasswordExpires:  {
+  resetPasswordExpires: {
     type: Date,
   },
 });
