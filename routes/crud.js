@@ -87,24 +87,46 @@ exRoute.post('/register', async (req, res) => {
 // Function to send verification email
 async function sendVerificationEmail(user) {
 
-    // Read the HTML file
-    let htmlContent = await fsp.readFile(path.join(__dirname, 'emailTemplate.html'), 'utf8');
+    // // Read the HTML file
+    // let htmlContent = await fsp.readFile(path.join("./public", 'emailTemplate.html'), 'utf8');
 
-    // Replace placeholder with actual verification link
-    htmlContent = htmlContent.replace('{{verificationToken}}', user.verificationToken);
+    // // Replace placeholder with actual verification link
+    // htmlContent = htmlContent.replace('{{verificationToken}}', user.verificationToken);
 
-    const mailOptions = {
-        to: user.email,
-        from: "bouda996@gmail.com",
-        subject: 'Email Verification',
-        html: htmlContent,
+    // const mailOptions = {
+    //     to: user.email,
+    //     from: "bouda996@gmail.com",
+    //     subject: 'Email Verification',
+    //     html: htmlContent,
 
-    };
-    transport.sendMail(mailOptions, (err, info) => {
-        if (err) {
-            return res.status(500).json({ message: 'Error sending verification email', error: err.message });
-        }
-    });
+    // };
+    // transport.sendMail(mailOptions, (err, info) => {
+    //     if (err) {
+    //         return res.status(500).json({ message: 'Error sending verification email', error: err.message });
+    //     }
+    // });
+
+    try {
+
+        // Generate reset token and expiry
+        user.generatePin();
+        await user.save();
+        // Send the email
+        const mailOptions = {
+            to: user.email,
+            from: "bouda996@gmail.com",
+            subject: 'Your Verification PIN for Secure Login',
+            text: `Dear ${user.f_name},\n\nThank you for logging in to Infinite. To ensure the security of your account, we require verification of your email address.\n\nPlease use the following PIN to complete your email verification:\n\nYour Verification PIN: ${user.pin}\n\nIf you did not request this verification, please ignore this email.\n\nFor any assistance, feel free to contact our support team at mabidi@smartlogiq.com .\n\nThank you for choosing Infinite.\n\nBest regards,\n\nThe Infinite Team`,
+        };
+        transport.sendMail(mailOptions, (err) => {
+            if (err) {
+                return res.status(500).send('Error sending email   ' + err);
+            }
+            res.status(200).send('Password reset email sent');
+        });
+    } catch (error) {
+        res.status(500).send('Error on the server   ' + error);
+    }
 }
 exRoute.get('/verify-email', async (req, res) => {
     const { token } = req.query;
@@ -142,13 +164,15 @@ exRoute.post('/login', async (req, res) => {
         console.log(password);
         const user = await User.findOne({ email });
         if (!user) return res.status(400).send('User not found');
-        //commented to adapt to infinity
-        // if (!user.emailVerifiedAt) {
-        //     const token2 = jwt.sign({ userId: user._id }, EMAIL_SECRET, { expiresIn: '1h' });
-        //     console.log(token2);
-        //     user.verificationToken = token2;
-        //     await sendVerificationEmail(user);
-        // }
+
+        //adapted to infiniti
+        if (user.user_type == "customer") {
+            // const token2 = jwt.sign({ userId: user._id }, EMAIL_SECRET, { expiresIn: '1h' });
+            // console.log("token2");
+            // console.log(token2);
+            // user.verificationToken = token2;
+            await sendVerificationEmail(user);
+        }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(401).send('Invalid credentials');
