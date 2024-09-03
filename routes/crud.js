@@ -335,6 +335,23 @@ exRoute.put('/:id/password', auth, async (req, res) => {
     }
 });
 
+// Update any user password
+exRoute.put('/password/:id', auth, async (req, res) => {
+    const { newPassword } = req.body;
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        // Hash the new password
+        user.password = await bcrypt.hash(newPassword, 10);
+        await user.save();
+
+        res.json({ message: 'Password updated successfully' });
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
 //upload user profile image
 exRoute.post('/upload', upload.single('file'), async (req, res) => {
     try {
