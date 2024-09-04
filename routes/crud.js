@@ -277,6 +277,29 @@ exRoute.post('/update-status', async (req, res) => {
     }
 });
 
+
+// Route to disable user
+exRoute.post('/disable', async (req, res) => {
+    try {
+        const { userId } = req.body;
+
+        // Find the user by ID and update the userStatus
+        const user = await User.findOneAndUpdate(
+            { _id: userId }, // Find the user by ID
+            { status: "disabled" }, // Update the userStatus
+            { new: true } // Return the updated document
+        );
+
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+
+        res.status(200).send('User status has been updated');
+    } catch (error) {
+        res.status(500).send('Error on the server: ' + error);
+    }
+});
+
 exRoute.put('/user/:id', auth, async (req, res) => {
     try {
         const { id } = req.params;
