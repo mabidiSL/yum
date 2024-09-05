@@ -242,7 +242,7 @@ exRoute.post('/admin/add-user', auth, async (req, res) => {
 
         await newUser.save();
 
-        res.status(201).json({ message: 'User added successfully by admin.' });
+        res.status(200).send(newUser);
 
     } catch (error) {
         console.error('Error adding user by admin:', error);
