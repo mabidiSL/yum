@@ -156,6 +156,20 @@ exRoute.get('/verify-email', async (req, res) => {
 
 
 
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     summary: login to your account
+ *     description: user login with email and pwd.
+ *     responses:
+ *       200:
+ *         description: Successful response with the user and a token.
+ *       400:
+ *         description: user not found.
+ *       500:
+ *         description: Error logging in user + error.
+ */
 exRoute.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -184,6 +198,23 @@ exRoute.post('/login', async (req, res) => {
     }
 });
 
+
+/**
+ * @swagger
+ * /admin/add-user:
+ *   post:
+ *     summary: add user to database
+ *     description: add user to database.
+ *     responses:
+ *       200:
+ *         description: Successful response with user added successfully by admin.
+ *       400:
+ *         description: user already exists.
+ *       401:
+ *         description: missing required fields.
+ *       500:
+ *         description: Error adding user by admin.
+ */
 //added for the infinity project
 exRoute.post('/admin/add-user', auth, async (req, res) => {
     try {
@@ -194,7 +225,7 @@ exRoute.post('/admin/add-user', auth, async (req, res) => {
         } = req.body;
 
         if (!username || !email || !password) {
-            return res.status(400).send('Missing required fields');
+            return res.status(401).send('Missing required fields');
         }
 
         const user = await User.findOne({ email });
@@ -219,9 +250,25 @@ exRoute.post('/admin/add-user', auth, async (req, res) => {
     }
 });
 
+
+/**
+ * @swagger
+ * /users/with-user-type:
+ *   get:
+ *     summary: get list of users by type (merchant)
+ *     description: get users list by type.
+ *     responses:
+ *       200:
+ *         description: Successful response with list of users(merchants).
+ *       500:
+ *         description: Error fetching users with user_type.
+ */
 exRoute.get('/users/with-user-type', async (req, res) => {
     try {
-        const merchants = await User.find({ user_type: 'merchant' });
+        const merchants = await User.find({
+            user_type: 'merchant',
+            status: { $ne: 'disabled' } // Exclude users with status 'disabled'
+        });
         res.json(merchants);
     } catch (error) {
         console.error('Error fetching users with user_type:', error);
@@ -229,6 +276,19 @@ exRoute.get('/users/with-user-type', async (req, res) => {
     }
 });
 
+
+/**
+ * @swagger
+ * /users/not-approved:
+ *   get:
+ *     summary: get list of not approved users
+ *     description: get not approved users list where user_type == merchant.
+ *     responses:
+ *       200:
+ *         description: Successful response with list of notApproved users.
+ *       500:
+ *         description: Error fetching users with status.
+ */
 exRoute.get('/users/not-approved', async (req, res) => {
     try {
         const users = await User.find({ status: 'notApproved', user_type: 'merchant' });
@@ -239,6 +299,18 @@ exRoute.get('/users/not-approved', async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /users/approved:
+ *   get:
+ *     summary: get list of approved users
+ *     description: get approved users list where user_type == merchant.
+ *     responses:
+ *       200:
+ *         description: Successful response with list of approved users.
+ *       500:
+ *         description: Error fetching users with status.
+ */
 exRoute.get('/users/approved', async (req, res) => {
     try {
         const users = await User.find({
@@ -252,6 +324,20 @@ exRoute.get('/users/approved', async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /update-status:
+ *   post:
+ *     summary: update user status
+ *     description: update user status by entering the id and the status.
+ *     responses:
+ *       200:
+ *         description: Successful response with sending the user.
+ *       404:
+ *         description: user not found.
+ *       500:
+ *         description: Error updating user + error.
+ */
 // Route to update userStatus
 exRoute.post('/update-status', async (req, res) => {
     try {
@@ -277,7 +363,20 @@ exRoute.post('/update-status', async (req, res) => {
     }
 });
 
-
+/**
+ * @swagger
+ * /disable:
+ *   post:
+ *     summary: disable user by id
+ *     description: update user by id.
+ *     responses:
+ *       200:
+ *         description: Successful response with user status has been updated.
+ *       404:
+ *         description: user not found.
+ *       500:
+ *         description: Error on the server + error.
+ */
 // Route to disable user
 exRoute.post('/disable', async (req, res) => {
     try {
@@ -300,6 +399,20 @@ exRoute.post('/disable', async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /user/:id:
+ *   put:
+ *     summary: update anyuser by id
+ *     description: update any user with id.
+ *     responses:
+ *       200:
+ *         description: Successful response with sending the user.
+ *       404:
+ *         description: user not found.
+ *       500:
+ *         description: Error updating user + error.
+ */
 exRoute.put('/user/:id', auth, async (req, res) => {
     try {
         const { id } = req.params;
@@ -320,6 +433,20 @@ exRoute.put('/user/:id', auth, async (req, res) => {
 });
 /*************************************************************************************/
 
+/**
+ * @swagger
+ * /user:
+ *   put:
+ *     summary: update connected user by token
+ *     description: update user with token.
+ *     responses:
+ *       200:
+ *         description: Successful response with sending the user.
+ *       404:
+ *         description: user not found.
+ *       500:
+ *         description: Error updating user + error.
+ */
 exRoute.put('/user', auth, async (req, res) => {
     try {
         const { userId } = req.user;
@@ -337,6 +464,18 @@ exRoute.put('/user', auth, async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /:_id/password:
+ *   put:
+ *     summary: update connected user password by id and token
+ *     description: update user password by entering the id, token, the new password and the old one.
+ *     responses:
+ *       200:
+ *         description: Successful response with password updated successfully.
+ *       500:
+ *         description: Error updating password.
+ */
 // Update user password
 exRoute.put('/:id/password', auth, async (req, res) => {
     const { currentPassword, newPassword } = req.body;
@@ -358,6 +497,18 @@ exRoute.put('/:id/password', auth, async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /password/:_id:
+ *   put:
+ *     summary: update any user password by id
+ *     description: update user password by entering the id and the new password
+ *     responses:
+ *       200:
+ *         description: Successful response with password updated successfully.
+ *       500:
+ *         description: Error updating password.
+ */
 // Update any user password
 exRoute.put('/password/:id', auth, async (req, res) => {
     const { newPassword } = req.body;
@@ -413,6 +564,18 @@ exRoute.delete('/delete/:filename', async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /user:
+ *   delete:
+ *     summary: Delete user with token
+ *     description: delete user from the database.
+ *     responses:
+ *       200:
+ *         description: Successful response with text user deleted.
+ *       500:
+ *         description: Error deleteing user.
+ */
 exRoute.delete('/user', auth, async (req, res) => {
     try {
         const { userId } = req.user;
@@ -424,7 +587,18 @@ exRoute.delete('/user', auth, async (req, res) => {
     }
 });
 
-
+/**
+ * @swagger
+ * /user:
+ *   get:
+ *     summary: Get any user with token
+ *     description: Retrieve the connected user data from the database with the token.
+ *     responses:
+ *       200:
+ *         description: Successful response with return user.
+ *       500:
+ *         description: Error Fetching user.
+ */
 exRoute.get('/user', auth, async (req, res) => {
     try {
         const { userId } = req.user;
@@ -436,6 +610,18 @@ exRoute.get('/user', auth, async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /user/:_id:
+ *   get:
+ *     summary: Get any user by id
+ *     description: Retrieve a specific user by their id from the database.
+ *     responses:
+ *       200:
+ *         description: Successful response with a list of users.
+ *       500:
+ *         description: Error Fetching a list of users.
+ */
 //get any user by id
 exRoute.get('/user/:_id', async (req, res) => {
     try {
@@ -449,6 +635,18 @@ exRoute.get('/user/:_id', async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /users:
+ *   get:
+ *     summary: Get a list of users
+ *     description: Retrieve a list of users from the database.
+ *     responses:
+ *       200:
+ *         description: Successful response with a list of users.
+ *       500:
+ *         description: Error Fetching a list of users.
+ */
 exRoute.get('/users', auth, async (req, res) => {
     try {
         const users = await User.find().select('-password');

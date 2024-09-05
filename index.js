@@ -7,16 +7,21 @@ const termsprivacy = require('./routes/terms_privacy');
 const app_info = require('./routes/app_info');
 const social = require('./routes/social');
 
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./middleware/swagger');
+
 
 
 const PORT = process.env.PORT || 3000;
+
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/', crud);
 app.use('/', recipecrud);
 app.use('/', termsprivacy);
 app.use('/', app_info);
 app.use('/', social);
-
 
 app.listen(PORT, () =>
     console.log('Server running on port: ' + PORT
