@@ -21,6 +21,8 @@ const b2 = require('../config/b2Config');
 const fs = require('fs');
 const fsp = require('fs').promises;
 const path = require('path');
+const axios = require('axios');
+
 
 
 const bucketName = 'yummy-user-p';
@@ -84,6 +86,44 @@ exRoute.post('/register', async (req, res) => {
     }
 });
 
+// GreenAPI credentials
+const idInstance = '7103112403';  // Replace with your GreenAPI instance ID
+const apiToken = '034fa50354ad4b0b9ad08ae898620c894a44f82c50f7413bbc';      // Replace with your GreenAPI token
+
+// Function to send OTP to WhatsApp
+const sendOtpToWhatsApp = async (otp, recipientNumber) => {
+    console.log(otp);
+    console.log(recipientNumber);
+    console.log(idInstance);
+    console.log(apiToken);
+    const url = `https://api.green-api.com/waInstance${idInstance}/SendMessage/${apiToken}`;
+
+
+    const data = {
+        chatId: `${recipientNumber}@c.us`.replace(/\+/g, ''),  // WhatsApp number with country code
+        message: `Your OTP code is: ${otp}`
+    };
+    console.log(data.chatId);
+    console.log(data.message);
+
+    try {
+        const response = await axios.post(url, data);
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            // API responded with an error
+            throw new Error(`API Error: ${JSON.stringify(error.response.data)}`);
+          } else if (error.request) {
+            // No response from the API (network issue)
+            throw new Error('No response from GreenAPI');
+          } else {
+            // Other error
+            throw new Error(`Error: ${error.message}`);
+          }
+    }
+};
+
+
 // Function to send verification email
 async function sendVerificationEmail(user) {
 
@@ -128,6 +168,7 @@ async function sendVerificationEmail(user) {
         res.status(500).send('Error on the server   ' + error);
     }
 }
+
 exRoute.get('/verify-email', async (req, res) => {
     const { token } = req.query;
 
@@ -151,6 +192,54 @@ exRoute.get('/verify-email', async (req, res) => {
     } catch (err) {
         console.error('Token verification failed:', err.message);
         res.status(400).json({ message: 'Invalid or expired token' });
+    }
+});
+
+// Route to request OTP
+exRoute.post('/request-otp', async (req, res) => {
+    const { phone } = req.body;
+
+    if (!phone) {
+        return res.status(400).json({ error: 'Phone number is required' });
+    }
+
+    // Check if user already exists
+    let user = await User.findOne({ phone });
+
+    if (!user) return res.status(401).send('User not found');
+
+    // Generate  a 4-digit OTP and expiry
+    user.generatePin();
+    await user.save();
+
+    const otp = user.pin;
+
+    try {
+        // Send OTP to the specified phone number
+        await sendOtpToWhatsApp(otp, phone);
+        res.status(200).json({ message: 'OTP sent successfully' });
+    } catch (error) {
+        res.status(500).json({ error: `Failed to send OTP: ${error.message}` });
+    }
+});
+
+// Route to verify OTP and sign in
+exRoute.post('/verify-otp', (req, res) => {
+    const { phoneNumber, otp } = req.body;
+
+    if (!phoneNumber || !otp) {
+        return res.status(400).json({ error: 'Phone number and OTP are required' });
+    }
+
+    // Check if the OTP matches
+    if (otpStore[phoneNumber] && otpStore[phoneNumber] === parseInt(otp)) {
+        // OTP is correct, user is signed in
+        // Remove the OTP from the store
+        delete otpStore[phoneNumber];
+
+        res.status(200).json({ message: 'Sign in successful' });
+    } else {
+        res.status(401).json({ error: 'Invalid OTP' });
     }
 });
 
@@ -180,13 +269,13 @@ exRoute.post('/login', async (req, res) => {
         if (!user) return res.status(400).send('User not found');
 
         //adapted to infiniti
-        if (user.user_type == "customer") {
-            // const token2 = jwt.sign({ userId: user._id }, EMAIL_SECRET, { expiresIn: '1h' });
-            // console.log("token2");
-            // console.log(token2);
-            // user.verificationToken = token2;
-            await sendVerificationEmail(user);
-        }
+        // if (user.user_type == "customer") {
+        //     // const token2 = jwt.sign({ userId: user._id }, EMAIL_SECRET, { expiresIn: '1h' });
+        //     // console.log("token2");
+        //     // console.log(token2);
+        //     // user.verificationToken = token2;
+        //     await sendVerificationEmail(user);
+        // }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(401).send('Invalid credentials');
