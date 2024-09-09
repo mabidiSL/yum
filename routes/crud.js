@@ -44,13 +44,13 @@ app.use(express.json());
 
 exRoute.post('/register', async (req, res) => {
     try {
-        const { username, email, password } = req.body;
+        const { username, email, password, cin, city,gender,phone, f_name, l_name} = req.body;
 
         // Log the received body
         console.log('Request Body:', req.body);
 
         // Check if any of the required fields are missing
-        if (!username || !email || !password) {
+        if (!username || !email || !password || !cin || !city || !gender || !phone) {
             return res.status(400).send('Missing required fields');
         }
 
@@ -62,7 +62,7 @@ exRoute.post('/register', async (req, res) => {
 
         // Hash the password and create a new user
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({ username, email, password: hashedPassword });
+        const newUser = new User({ username, email,cin,city,gender,phone,f_name,l_name, password: hashedPassword });
 
 
         await newUser.save();
