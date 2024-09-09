@@ -7,8 +7,11 @@ const PhoneSchema = require('./phone').schema;
 const UserSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true, },
   email: { type: String, required: true, unique: true, },
+  cin: { type: String, required: true, unique: true, },
   f_name: { type: String, },
   l_name: { type: String, },
+  city: { type: String, },
+  gender: { type: String, },
   password: { type: String, required: true, },
   registrationDate: {
     type: Date,
