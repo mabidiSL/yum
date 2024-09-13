@@ -5,7 +5,7 @@ const ClaimsSchema = new mongoose.Schema({
     type: Number,
   },
   value: {
-    type: Number,
+    type: [Number],
   },
 });
 
