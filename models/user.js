@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const BMISchema = require('./bmi').schema;
 const RecipeSchema = require('./recipe').schema;
 const PhoneSchema = require('./phone').schema;
+const RoleSchema = require('./role').schema;
 
 const UserSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true, },
@@ -95,6 +96,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: ""
   },
+  role: RoleSchema,
   //commented to adapt to infinity
   // emailVerifiedAt: {
   //   type: Boolean,
