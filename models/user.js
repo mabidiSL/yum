@@ -13,6 +13,9 @@ const UserSchema = new mongoose.Schema({
   l_name: { type: String, },
   city: { type: String, },
   gender: { type: String, },
+  storeName:{type:String},
+  storeLogo:{type:String},
+
   password: { type: String, required: true, },
   registrationDate: {
     type: Date,
@@ -68,6 +71,62 @@ const UserSchema = new mongoose.Schema({
     default: ""
   },
   country: {
+    type: String,
+    default: ""
+  },
+  area: {
+    type: String,
+    default: ""
+  },
+  serviceType: {
+    type: String,
+    default: ""
+  },
+  supervisorName: {
+    type: String,
+    default: ""
+  },
+  supervisorPhone: {
+    type: String,
+    default: ""
+  },
+  bankAccountNumber: {
+    type: String,
+    default: ""
+  },
+  registerCode: {
+    type: String,
+    default: ""
+  },
+  merchantPicture: {
+    type: String,
+    default: ""
+  },
+  website: {
+    type: String,
+    default: ""
+  },
+  whatsup: {
+    type: String,
+    default: ""
+  },
+  facebook: {
+    type: String,
+    default: ""
+  },
+  twitter: {
+    type: String,
+    default: ""
+  },
+  instagram: {
+    type: String,
+    default: ""
+  },
+  merchantSection: {
+    type: String,
+    default: ""
+  },
+  merchantCategory: {
     type: String,
     default: ""
   },

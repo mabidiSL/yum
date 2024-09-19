@@ -87,6 +87,101 @@ exRoute.post('/register', async (req, res) => {
     }
 });
 
+exRoute.post('/merchant-register', async (req, res) => {
+    try {
+        const {
+            username,
+            email,
+            password,
+            cin,
+            city,
+            phone,
+            storeName,
+            storeLogo,
+            country,
+            area,
+            serviceType,
+            supervisorName,
+            supervisorPhone,
+            bankAccountNumber,
+            registerCode,
+            merchantPicture,
+            website,
+            whatsup,
+            facebook,
+            twitter,
+            instagram,
+            merchantSection,
+            merchantCategory
+          } = req.body;
+
+        // Log the received body
+        console.log('Request Body:', req.body);
+        // console.log('Request Body ROLE:', role);
+
+        // Check if any of the required fields are missing        
+        if (!username || !email || !password || !cin || !city || !phone || !storeName || !storeLogo || !merchantSection || !merchantCategory ) {
+            return res.status(400).send('Missing required fields');
+        }
+
+        // Check if the user already exists
+        const user = await User.findOne({ email });
+        if (user) {
+            return res.status(400).send('User already exists');
+        }
+
+        // Hash the password and create a new user
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User(
+            {
+                username,
+                email,
+                password: hashedPassword,
+                cin,
+                city,
+                phone,
+                storeName,
+                storeLogo,
+                country,
+                area,
+                serviceType,
+                supervisorName,
+                supervisorPhone,
+                bankAccountNumber,
+                registerCode,
+                merchantPicture,
+                website,
+                whatsup,
+                facebook,
+                twitter,
+                instagram,
+                merchantSection,
+                merchantCategory,
+                role:{name:"merchant",claims:[]}
+              });
+
+
+        await newUser.save();
+        // Generate reset token and expiry
+        // newUser.generatePin();
+
+
+        // Generate a verification token
+        const token = jwt.sign({ userId: newUser._id }, EMAIL_SECRET, { expiresIn: '1h' });
+        newUser.verificationToken = token;
+
+        //commented to adapt to infinity
+        // await sendVerificationEmail(newUser);
+
+
+        res.status(201).json({ message: 'Registration successful. Please check your email to verify your account.' });
+
+    } catch (error) {
+        console.error('Error registering merchant:', error);
+        res.status(500).send('Error registering merchant');
+    }
+});
+
 // GreenAPI credentials
 const idInstance = '7103112403';  // Replace with your GreenAPI instance ID
 const apiToken = '034fa50354ad4b0b9ad08ae898620c894a44f82c50f7413bbc';      // Replace with your GreenAPI token
