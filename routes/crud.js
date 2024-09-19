@@ -120,9 +120,9 @@ exRoute.post('/merchant-register', async (req, res) => {
         // console.log('Request Body ROLE:', role);
 
         // Check if any of the required fields are missing        
-        if (!username || !email || !password || !cin || !city || !phone || !storeName || !storeLogo || !merchantSection || !merchantCategory ) {
-            return res.status(400).send('Missing required fields');
-        }
+        //if (!username || !email || !password || !cin || !city || !phone || !storeName || !storeLogo || !merchantSection || !merchantCategory ) {
+        //    return res.status(400).send('Missing required fields');
+        //}
 
         // Check if the user already exists
         const user = await User.findOne({ email });
