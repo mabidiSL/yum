@@ -66,8 +66,8 @@ cRoute.get('/coupons', async (req, res) => {
 cRoute.get('/coupon', async (req, res) => {
     try {
         console.log(req.params);
-        console.log(req.query.idMeal);
-        const coupon = await Coupon.findOne({ idMeal: req.query.idMeal });
+        console.log(req.query.id);
+        const coupon = await Coupon.findOne({ _id: req.query.id });
         if (!coupon) {
             return res.status(404).json({ message: 'coupon not found' });
         }
@@ -80,10 +80,8 @@ cRoute.get('/coupon', async (req, res) => {
 //update coupon
 cRoute.put('/coupon', auth, async (req, res) => {
     try {
-        const { _id } = req.body;
-        console.log(req.body);
         await Coupon.findByIdAndUpdate(
-            _id,
+            { _id: req.query.id },
             req.body,
             { new: true });
         res.send('coupon updated');
@@ -95,21 +93,12 @@ cRoute.put('/coupon', auth, async (req, res) => {
 //delete coupon
 cRoute.delete('/coupon', auth, async (req, res) => {
     try {
-        const { _id } = req.body;
 
-        await Coupon.findByIdAndDelete(_id);
+        await Coupon.findByIdAndDelete({ _id: req.query.id });
         res.send('coupon deleted');
     } catch (error) {
         res.status(500).send('Error deleting user');
     }
 });
-
-
-
-//testing api
-cRoute.use('/coupontest', function (req, res, next) {
-    console.log("crud coupon working");
-    res.sendStatus(404);
-})
 
 module.exports = cRoute;
