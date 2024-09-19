@@ -3,6 +3,7 @@ const app = express();
 app.use(express.json());
 const crud = require('./routes/crud');
 const recipecrud = require('./routes/crud_recipe');
+const couponcrud = require('./routes/crud_coupon');
 const termsprivacy = require('./routes/terms_privacy');
 const app_info = require('./routes/app_info');
 const social = require('./routes/social');
@@ -19,10 +20,11 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/', crud);
 app.use('/', recipecrud);
+app.use('/', couponcrud);
 app.use('/', termsprivacy);
 app.use('/', app_info);
 app.use('/', social);
 
 app.listen(PORT, () =>
-    console.log('Server running on port: ' + PORT
-    ));
+    console.log('Server running on port: ' + PORT
+    ));
