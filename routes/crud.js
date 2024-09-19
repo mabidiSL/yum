@@ -451,7 +451,7 @@ exRoute.post('/admin/add-user', auth, async (req, res) => {
 exRoute.get('/users/with-user-type', async (req, res) => {
     try {
         const merchants = await User.find({
-            user_type: 'merchant',
+            'role.name': 'merchant',
             status: { $ne: 'disabled' } // Exclude users with status 'disabled'
         });
         res.json(merchants);
@@ -476,7 +476,7 @@ exRoute.get('/users/with-user-type', async (req, res) => {
  */
 exRoute.get('/users/not-approved', async (req, res) => {
     try {
-        const users = await User.find({ status: 'notApproved', user_type: 'merchant' });
+        const users = await User.find({ status: 'notApproved', 'role.name': 'merchant' });
         res.json(users);
     } catch (error) {
         console.error('Error fetching users with status:', error);
